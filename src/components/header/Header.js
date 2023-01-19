@@ -23,6 +23,9 @@ const cart = (
   </span>
 );
 
+const activeLink = ({isActive}) => (isActive ? `${styles.active}` : "")
+
+
 const Header = () => {
 
   const [showMenu, setShowMenu] = useState(false);
@@ -49,17 +52,17 @@ const Header = () => {
               <FaTimes size={20} color="#fff" onClick={hideMenu}/>
             </li>
             <li>
-              <NavLink to="/">Home</NavLink>
+              <NavLink to="/" className={activeLink}>Home</NavLink>
             </li>
             <li>
-              <NavLink to="/contact">Contact Us</NavLink>
+              <NavLink to="/contact" className={activeLink}>Contact Us</NavLink>
             </li>
           </ul>
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-              <Link to="/order-history">My Orders</Link>
+              <NavLink to="/login" className={activeLink}>Login</NavLink>
+              <NavLink to="/register" className={activeLink}>Register</NavLink>
+              <NavLink to="/order-history" className={activeLink}>My Orders</NavLink>
             </span>
             {cart}
           </div>
