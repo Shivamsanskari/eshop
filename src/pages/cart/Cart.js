@@ -3,7 +3,7 @@ import styles from "./Cart.module.scss";
 
 const Cart = () => {
   return (
-    <div>Cart</div>
+    <div className={styles.table}>Cart</div>
   )
 }
 
