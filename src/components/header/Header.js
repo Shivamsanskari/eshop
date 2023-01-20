@@ -23,7 +23,7 @@ const logo = (
 
 const cart = (
   <span className={styles.cart}>
-    <Link to="/cart">Cart <FaShoppingCart size={20} />
+    <Link to="/cart">Cart <FaShoppingCart size={20} style={{marginLeft:"3px"}}/>
       <p>0</p>
     </Link>
   </span>

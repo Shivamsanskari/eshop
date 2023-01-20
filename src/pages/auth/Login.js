@@ -21,6 +21,12 @@ const Login = () => {
     // Login with Email and Password...
     const loginUser = (e) => {
         e.preventDefault();
+        var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+        if(!(email.match(validRegex))){
+          toast.error("Please enter a valid email address");
+          return
+        }
         setIsLoading(true);
 
         signInWithEmailAndPassword(auth, email, password)
