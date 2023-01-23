@@ -23,9 +23,9 @@ const Login = () => {
         e.preventDefault();
         var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-        if(!(email.match(validRegex))){
-          toast.error("Please enter a valid email address");
-          return
+        if (!(email.match(validRegex))) {
+            toast.error("Please enter a valid email address");
+            return
         }
         setIsLoading(true);
 
@@ -54,6 +54,9 @@ const Login = () => {
             .then((result) => {
                 setIsLoading(false);
                 toast.success("Login Successful");
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000)
             })
             .catch((error) => {
                 setIsLoading(false);
