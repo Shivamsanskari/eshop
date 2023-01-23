@@ -9,6 +9,9 @@ import { signOut, onAuthStateChanged  } from "firebase/auth";
 import { auth } from '../../firebase/config';
 
 import { toast } from 'react-toastify';
+import { SET_ACTIVE_USER, REMOVE_ACTIVE_USER, selectIsLoggedIn } from '../../redux/slice/authSlice';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const logo = (
@@ -37,22 +40,38 @@ const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [displayName, setdisplayName] = useState('');
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const isLoggedIN  = useSelector(selectIsLoggedIn);
 
   // Monitor currently signedIn User
 
   useEffect(()=>{
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
-        console.log(user.displayName);
-        setdisplayName(user.displayName);
+        // console.log(user);
+        // console.log(user.displayName);
+        if(user.displayName === null){
+          let index = (user.email).indexOf('@');
+          let extractedName = user.email.substring(0,index);
+          let capitalizedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
+          setdisplayName(capitalizedName);
+        }
+        else{
+          setdisplayName(user.displayName);
+        }
+        dispatch(SET_ACTIVE_USER({
+          isLoggedIn: true,
+          email: user.email,
+          userName: user.displayName,
+          userID: user.uid,
+        }))
+        
       } else {
-        // User is signed out
-        // ...
+        setdisplayName("");
+        dispatch(REMOVE_ACTIVE_USER());
       }
     });
-  },[])
+  },[dispatch])
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -93,11 +112,12 @@ const Header = () => {
           </ul>
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
-              <NavLink to="/login" className={activeLink}>Login</NavLink>
-              <a href="#home"><FaUserCircle size={16} style={{marginBottom:"-3px"}}/><span>Hi {displayName}</span></a>
-              <NavLink to="/register" className={activeLink}>Register</NavLink>
-              <NavLink to="/order-history" className={activeLink}>My Orders</NavLink>
-              <NavLink to="/" onClick={logoutUser}>Logout</NavLink>
+              {!isLoggedIN && <NavLink to="/login" className={activeLink}>Login</NavLink>}
+              {isLoggedIN && <a href="#home"><FaUserCircle size={16} style={{marginBottom:"-3px"}}/><span>Hi {displayName}</span></a>}
+              {console.log(isLoggedIN)}
+              {!isLoggedIN &&<NavLink to="/register" className={activeLink}>Register</NavLink>}
+              {isLoggedIN && <NavLink to="/order-history" className={activeLink}>My Orders</NavLink> }
+              {isLoggedIN && <NavLink to="/" onClick={logoutUser}>Logout</NavLink>}
              </span>
             {cart}
           </div>
