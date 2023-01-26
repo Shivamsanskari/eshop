@@ -5,13 +5,16 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 
-import { signOut, onAuthStateChanged  } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from '../../firebase/config';
 
 import { toast } from 'react-toastify';
-import { SET_ACTIVE_USER, REMOVE_ACTIVE_USER, selectIsLoggedIn } from '../../redux/slice/authSlice';
+import { SET_ACTIVE_USER, REMOVE_ACTIVE_USER } from '../../redux/slice/authSlice';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+import ShowOnLogin, { ShowOnLogout } from '../hiddenLink/hiddenLink';
+import AdminOnlyRoute from '../adminOnlyRoutes/AdminOnlyRoute';
 
 
 const logo = (
@@ -26,13 +29,13 @@ const logo = (
 
 const cart = (
   <span className={styles.cart}>
-    <Link to="/cart">Cart <FaShoppingCart size={20} style={{marginLeft:"3px"}}/>
+    <Link to="/cart">Cart <FaShoppingCart size={20} style={{ marginLeft: "3px" }} />
       <p>0</p>
     </Link>
   </span>
 );
 
-const activeLink = ({isActive}) => (isActive ? `${styles.active}` : "")
+const activeLink = ({ isActive }) => (isActive ? `${styles.active}` : "")
 
 
 const Header = () => {
@@ -41,22 +44,20 @@ const Header = () => {
   const [displayName, setdisplayName] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isLoggedIN  = useSelector(selectIsLoggedIn);
 
   // Monitor currently signedIn User
 
-  useEffect(()=>{
+  useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // console.log(user);
-        // console.log(user.displayName);
-        if(user.displayName === null){
+        if (user.displayName === null) {
           let index = (user.email).indexOf('@');
-          let extractedName = user.email.substring(0,index);
+          let extractedName = user.email.substring(0, index);
           let capitalizedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
           setdisplayName(capitalizedName);
         }
-        else{
+        else {
           setdisplayName(user.displayName);
         }
         dispatch(SET_ACTIVE_USER({
@@ -65,13 +66,13 @@ const Header = () => {
           userName: user.displayName,
           userID: user.uid,
         }))
-        
+
       } else {
         setdisplayName("");
         dispatch(REMOVE_ACTIVE_USER());
       }
     });
-  },[dispatch])
+  }, [dispatch])
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -81,7 +82,7 @@ const Header = () => {
     setShowMenu(false);
   }
 
-  const logoutUser = () =>{
+  const logoutUser = () => {
     signOut(auth).then(() => {
       toast.success("Logged out successfully");
       navigate('/');
@@ -101,8 +102,13 @@ const Header = () => {
           <ul onClick={hideMenu}>
             <li className={styles["logo-mobile"]}>
               {logo}
-              <FaTimes size={20} color="#fff" onClick={hideMenu}/>
+              <FaTimes size={20} color="#fff" onClick={hideMenu} />
             </li>
+            <AdminOnlyRoute>
+              <li>
+                <button className='--btn --btn-primary'>Admin Dashboard</button>
+              </li>
+            </AdminOnlyRoute>
             <li>
               <NavLink to="/" className={activeLink}>Home</NavLink>
             </li>
@@ -112,13 +118,24 @@ const Header = () => {
           </ul>
           <div className={styles["header-right"]} onClick={hideMenu}>
             <span className={styles.links}>
-              {!isLoggedIN && <NavLink to="/login" className={activeLink}>Login</NavLink>}
-              {isLoggedIN && <a href="#home"><FaUserCircle size={16} style={{marginBottom:"-3px"}}/><span>Hi {displayName}</span></a>}
-              {console.log(isLoggedIN)}
-              {!isLoggedIN &&<NavLink to="/register" className={activeLink}>Register</NavLink>}
-              {isLoggedIN && <NavLink to="/order-history" className={activeLink}>My Orders</NavLink> }
-              {isLoggedIN && <NavLink to="/" onClick={logoutUser}>Logout</NavLink>}
-             </span>
+
+              <ShowOnLogout>
+                <NavLink to="/login" className={activeLink}>Login</NavLink>
+              </ShowOnLogout>
+              <ShowOnLogin>
+                <a href="#home"><FaUserCircle size={16} style={{ marginBottom: "-3px" }} /><span>Hi {displayName}</span></a>
+              </ShowOnLogin>
+              <ShowOnLogout>
+                <NavLink to="/register" className={activeLink}>Register</NavLink>
+              </ShowOnLogout>
+              <ShowOnLogin>
+                <NavLink to="/order-history" className={activeLink}>My Orders</NavLink>
+              </ShowOnLogin>
+              <ShowOnLogin>
+                <NavLink to="/" onClick={logoutUser}>Logout</NavLink>
+              </ShowOnLogin>
+
+            </span>
             {cart}
           </div>
         </nav>
