@@ -14,7 +14,7 @@ import { SET_ACTIVE_USER, REMOVE_ACTIVE_USER } from '../../redux/slice/authSlice
 import { useDispatch } from 'react-redux';
 
 import ShowOnLogin, { ShowOnLogout } from '../hiddenLink/hiddenLink';
-import AdminOnlyRoute from '../adminOnlyRoutes/AdminOnlyRoute';
+import { AdminOnlyLink } from '../adminOnlyRoutes/AdminOnlyRoute';
 
 
 const logo = (
@@ -63,7 +63,7 @@ const Header = () => {
         dispatch(SET_ACTIVE_USER({
           isLoggedIn: true,
           email: user.email,
-          userName: user.displayName,
+          userName: user.displayName ? user.displayName : displayName,
           userID: user.uid,
         }))
 
@@ -72,7 +72,7 @@ const Header = () => {
         dispatch(REMOVE_ACTIVE_USER());
       }
     });
-  }, [dispatch])
+  }, [dispatch,displayName])
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -104,11 +104,13 @@ const Header = () => {
               {logo}
               <FaTimes size={20} color="#fff" onClick={hideMenu} />
             </li>
-            <AdminOnlyRoute>
+            <AdminOnlyLink>
               <li>
-                <button className='--btn --btn-primary'>Admin Dashboard</button>
+                <Link to={'/admin/home'}>
+                  <button className='--btn --btn-primary'>Admin Dashboard</button>
+                </Link>
               </li>
-            </AdminOnlyRoute>
+            </AdminOnlyLink>
             <li>
               <NavLink to="/" className={activeLink}>Home</NavLink>
             </li>

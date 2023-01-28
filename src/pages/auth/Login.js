@@ -31,13 +31,11 @@ const Login = () => {
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user);
+                // const user = userCredential.user;
+                // console.log(user);
                 setIsLoading(false);
                 toast.success("Login successful...");
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000)
+                navigate('/');
             })
             .catch((error) => {
                 toast.error(error.message);
@@ -54,9 +52,7 @@ const Login = () => {
             .then((result) => {
                 setIsLoading(false);
                 toast.success("Login Successful");
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000)
+                navigate('/');
             })
             .catch((error) => {
                 setIsLoading(false);
