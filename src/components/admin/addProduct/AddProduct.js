@@ -68,7 +68,7 @@ const AddProducts = () => {
 
     try {
       // Add a new document with a generated id.
-      const docRef = await addDoc(collection(db, "products"), {
+      await addDoc(collection(db, "products"), {
         name: product.name,
         imageURL: product.imageURL,
         price: Number(product.price),
@@ -78,7 +78,6 @@ const AddProducts = () => {
         createdAt: Timestamp.now()
       });
       setIsLoading(false);
-      console.log(docRef);
       toast.success("Product added successfully");
       setUploadProgress(0);
       aRef.current.value = null;
@@ -122,7 +121,7 @@ const AddProducts = () => {
             <label>Product Price:</label>
             <input type="text" name="price" placeholder="Product price" value={product.price} onChange={(e) => handleInputChange(e)} required />
 
-            <label>Product Price:</label>
+            <label>Product Category:</label>
             <select name="category" required value={product.category} onChange={(e) => handleInputChange(e)}>
               <option value="" disabled>-- Choose Product Category --</option>
               {categories.map((category) => {
