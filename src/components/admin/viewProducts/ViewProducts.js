@@ -7,7 +7,7 @@ import { db } from '../../../firebase/config';
 import Loader from '../../loader/Loader';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import styles from './ViewProducts.module.scss';
-import { async } from '@firebase/util';
+
 
 
 
