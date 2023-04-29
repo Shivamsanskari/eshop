@@ -25,7 +25,6 @@ const ViewProducts = () => {
   useEffect(() => {
     getProducts();
     setProducts([]); // Here i am setting the products to blank to prevent memory leaks...
-    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 

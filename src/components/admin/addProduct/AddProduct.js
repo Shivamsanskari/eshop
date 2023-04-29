@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import Loader from '../../loader/Loader';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const categories = [
@@ -25,12 +25,22 @@ const initialState = {
   desc: "",
 };
 const AddProducts = () => {
+  const {productId} = useParams();
+  // console.log(productId);
 
   const aRef = useRef(null);
   const [product, setProduct] = useState({...initialState});
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
+
+
+  function detectForm(productId,f1,f2){
+    if(productId === "ADD"){
+      return f1;
+    }
+    return f2;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -94,7 +104,7 @@ const AddProducts = () => {
     <>
     {isLoading && <Loader />}
       <div className={styles.product}>
-        <h1>Add New Product</h1>
+        <h2>{detectForm(productId,"Add New Product","Edit Product")}</h2>
         <Card cardClass={styles.card}>
           <form onSubmit={addProduct}>
 
@@ -144,7 +154,7 @@ const AddProducts = () => {
               rows="10"
             ></textarea>
 
-            <button className="--btn --btn-primary">Save Product</button>
+            <button className="--btn --btn-primary">{detectForm(productId,"Save Product","Edit Product")}</button>
 
           </form>
         </Card>
