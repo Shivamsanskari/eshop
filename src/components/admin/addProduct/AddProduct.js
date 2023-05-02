@@ -1,12 +1,15 @@
 import React, { useRef, useState } from 'react'
 import Card from '../../card/Card';
 import styles from './AddProduct.module.scss';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { toast } from 'react-toastify';
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
+import { doc, addDoc, setDoc, collection, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import Loader from '../../loader/Loader';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import { useSelector } from 'react-redux';
+import { selectProducts } from '../../../redux/slice/productSlice';
 
 
 const categories = [
@@ -26,15 +29,26 @@ const initialState = {
 };
 const AddProducts = () => {
   const {productId} = useParams();
-  // console.log(productId);
+  console.log(productId);
 
   const aRef = useRef(null);
-  const [product, setProduct] = useState({...initialState});
+  // const [product, setProduct] = useState({...initialState});
+  const storage = getStorage();
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
 
-
+  const products = useSelector(selectProducts); // Selecting all the products from redux store
+  const productEdit = products.find((item)=> item.id === productId); // Finding the product that matches the product id
+  
+  console.log(productEdit);
+ 
+  const [product,setProduct] = useState(()=> {
+    const newState = detectForm(productId, {...initialState}, productEdit )
+    return newState;
+  })
+  // ........................................................ Detecting the form (ADD/EDIT) ................................
+ 
   function detectForm(productId,f1,f2){
     if(productId === "ADD"){
       return f1;
@@ -49,7 +63,6 @@ const AddProducts = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     // console.log(file);
-    const storage = getStorage();
     const storageRef = ref(storage, `eshop/${Date.now()}${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -70,7 +83,6 @@ const AddProducts = () => {
     );
 
   };
-
   const addProduct = async (e) => {
     e.preventDefault();
 
@@ -100,13 +112,45 @@ const AddProducts = () => {
     }
   };
 
+  const editProduct = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+
+      // Check if the image URL has changed to new URL
+      if (product.imageURL !== productEdit.imageURL){
+        const storageRef  = ref(storage, productEdit.imageURL);
+        deleteObject(storageRef);
+      }
+
+      // Edit a document with a id.
+      setDoc(doc(db, "products",productId), {
+        name: product.name,
+        imageURL: product.imageURL,
+        price: Number(product.price),
+        category: product.category,
+        brand: product.brand,
+        desc: product.desc,
+        createdAt: Timestamp.now()
+      });
+      toast.success("Product added successfully");
+      navigate('/admin/all-products/');
+    }
+    catch (error) {
+      toast.error(error.message);
+      console.log(error)
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
     {isLoading && <Loader />}
       <div className={styles.product}>
         <h2>{detectForm(productId,"Add New Product","Edit Product")}</h2>
         <Card cardClass={styles.card}>
-          <form onSubmit={addProduct}>
+          <form onSubmit={detectForm(productId,addProduct,editProduct)}>
 
             <label>Product Name:</label>
             <input type="text" name="name" placeholder="Product Name" value={product.name} onChange={(e) => handleInputChange(e)} required />
@@ -154,7 +198,7 @@ const AddProducts = () => {
               rows="10"
             ></textarea>
 
-            <button className="--btn --btn-primary">{detectForm(productId,"Save Product","Edit Product")}</button>
+            <button className="--btn --btn-primary">{detectForm(productId,"Add Product","Edit Product")}</button>
 
           </form>
         </Card>

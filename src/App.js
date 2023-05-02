@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import styles from './App.module.scss';
 // Pages
 import { Home, Contact, Login, Register, Reset, Cart, Admin } from './pages';
 
@@ -10,7 +10,6 @@ import AdminOnlyRoute from "./components/adminOnlyRoutes/AdminOnlyRoute";
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 
 function App() {

@@ -28,6 +28,7 @@ const ViewProducts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
+  // ..................................................................... Getting all the products  ..........................................................
   const getProducts = () => {
     setIsLoading(true);
     try {
@@ -35,12 +36,10 @@ const ViewProducts = () => {
 
       const q = query(productsRef, orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
-        // console.log(snapshot.docs);
         const allProducts = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
         }));
-        // console.log(allProducts);
         setProducts(allProducts);
         setIsLoading(false);
         
@@ -57,6 +56,8 @@ const ViewProducts = () => {
       toast.error(error.message);
     }
   }
+
+    // .................................................................  Confirm Box for delete product (Using Notiflix Package)   ............................ 
 
   const confirmDelete = (id, imageURL) => {
     Notiflix.Confirm.show(
@@ -80,6 +81,8 @@ const ViewProducts = () => {
       },
     );
   }
+
+  // .................................................................  Delete a product from admin panel product list   ............................
 
   const deleteProduct = async(id, imageURL) => {
     try {
