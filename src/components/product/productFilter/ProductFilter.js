@@ -1,9 +1,9 @@
 import React from 'react'
 
-const productFilter = () => {
+const ProductFilter = () => {
   return (
     <div>productFilter</div>
   )
 }
 
-export default productFilter
+export default ProductFilter

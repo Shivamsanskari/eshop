@@ -1,9 +1,20 @@
 import React from 'react'
-
-const product = () => {
+import styles from "./Product.module.scss";
+import ProductFilter from './productFilter/ProductFilter';
+import ProductList from './productsList/ProductList';
+const Product = () => {
   return (
-    <div>product</div>
+    <section>
+      <div className={`container ${styles.product}`}>
+        <aside className={styles.filter}>
+          <ProductFilter />
+        </aside>
+        <div className={styles.content}>
+          <ProductList />
+        </div>
+      </div>
+    </section>
   )
 }
 
-export default product
+export default Product
